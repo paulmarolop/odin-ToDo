@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A modern, accessible todo list application for managing tasks and projects">
+    <meta name="theme-color" content="#6366F1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>TaskFlow - Organize Your Life</title>
+<script defer src="main.js"></script></head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Skip to main content link for screen readers -->
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" role="complementary" aria-label="Project navigation">
+            <div class="sidebar-header">
+                <h1 class="app-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>
+                    </svg>
+                    UrTask
+                </h1>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="project-header">
+                    <h2 class="section-title">Projects</h2>
+                    <button id="add-project-btn" class="btn btn-icon" aria-label="Add new project">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <nav class="project-list" id="project-list" role="navigation" aria-label="Project list">
+                    <!-- Projects will be rendered here -->
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content" id="main-content" role="main">
+            <header class="content-header" role="banner">
+                <div class="header-left">
+                    <button id="toggle-sidebar" class="btn btn-icon d-md-none" aria-label="Toggle sidebar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <div class="project-selector" role="group" aria-label="Project selection">
+                        <select id="project-select" class="form-select" aria-label="Current project">
+                            <option value="default">All Tasks</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button id="add-task-btn" class="btn btn-primary" aria-label="Add new task">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-1">
+                            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
+                        </svg>
+                        Add Task
+                    </button>
+                </div>
+            </header>
+            
+            <section class="tasks-container" role="region" aria-label="Task management">
+                <div class="task-list" id="task-list" role="list" aria-label="Task list" aria-live="polite">
+                    <!-- Tasks will be rendered here -->
+                </div>
+            </section>
+        </main>
+        
+        <!-- Task Form Modal -->
+        <div id="task-modal" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="form-title">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="form-title" class="modal-title">Add New Task</h2>
+                        <button type="button" id="close-task-modal" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="task-form" novalidate>
+                            <div class="mb-3">
+                                <label for="task-title" class="form-label">
+                                    Title 
+                                    <span class="text-danger" aria-label="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="task-title" 
+                                    name="title" 
+                                    class="form-control"
+                                    required 
+                                    aria-required="true"
+                                    aria-describedby="task-title-error"
+                                    autocomplete="off"
+                                    placeholder="What needs to be done?"
+                                >
+                                <div id="task-title-error" class="invalid-feedback" aria-live="polite"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="task-description" class="form-label">Description</label>
+                                <textarea 
+                                    id="task-description" 
+                                    name="description"
+                                    class="form-control"
+                                    aria-describedby="task-description-help"
+                                    rows="3"
+                                    placeholder="Add details about this task..."
+                                ></textarea>
+                                <div id="task-description-help" class="form-text">Optional detailed description of the task</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="task-due-date" class="form-label">Due Date</label>
+                                    <input 
+                                        type="date" 
+                                        id="task-due-date" 
+                                        name="dueDate"
+                                        class="form-control"
+                                        aria-describedby="task-due-date-help"
+                                    >
+                                    <div id="task-due-date-help" class="form-text">Optional due date</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="task-priority" class="form-label">Priority</label>
+                                    <select id="task-priority" name="priority" class="form-select" aria-describedby="task-priority-help">
+                                        <option value="low">Low Priority</option>
+                                        <option value="medium" selected>Medium Priority</option>
+                                        <option value="high">High Priority</option>
+                                    </select>
+                                    <div id="task-priority-help" class="form-text">Set importance level</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="task-notes" class="form-label">Notes</label>
+                                <textarea 
+                                    id="task-notes" 
+                                    name="notes"
+                                    class="form-control"
+                                    aria-describedby="task-notes-help"
+                                    rows="3"
+                                    placeholder="Any additional notes..."
+                                ></textarea>
+                                <div id="task-notes-help" class="form-text">Additional context for the task</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="cancel-task" class="btn btn-outline-secondary" aria-label="Cancel and close form">
+                                    Cancel
+                                </button>
+                                <button type="submit" id="save-task" class="btn btn-primary" aria-label="Save task">
+                                    Save Task
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Project Form Modal -->
+        <div id="project-modal" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="project-form-title">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="project-form-title" class="modal-title">New Project</h2>
+                        <button type="button" id="close-project-modal" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="project-form" novalidate>
+                            <div class="mb-3">
+                                <label for="project-name" class="form-label">
+                                    Project Name
+                                    <span class="text-danger" aria-label="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="project-name" 
+                                    name="name" 
+                                    class="form-control"
+                                    required 
+                                    aria-required="true"
+                                    placeholder="Enter project name"
+                                >
+                                <div id="project-name-error" class="invalid-feedback" aria-live="polite"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="cancel-project" class="btn btn-outline-secondary">Cancel</button>
+                                <button type="submit" id="save-project" class="btn btn-primary">Create Project</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Screen reader announcements -->
+        <div id="announcements" aria-live="assertive" aria-atomic="true" class="visually-hidden"></div>
+        
+        <!-- Toast notifications -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <!-- Toasts will be added here dynamically -->
+        </div>
+        
+        <!-- Loading indicator -->
+        <div id="loading-indicator" class="loading-overlay hidden" role="status" aria-label="Loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
